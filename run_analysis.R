@@ -45,6 +45,6 @@ for (featureName in myFeatures$featureName2[2:kFeatures]){
    eval(parse(text=sprintf("dataSet2 <- left_join(dataSet2, summarize(group_by(dataSet1, activityId, subjectId), mean(%s)))", featureName)))
                                       # Joining by: c("activityId", "subjectId")
 }
-dataSet2 <- left_join(dataSet2, activityLabels)  # dommage de le refaire...
+dataSet2 <- left_join(dataSet2, activityLabels)
 
 write.table(dataSet2, file="project-output.txt", quote=FALSE, row.names=FALSE)
