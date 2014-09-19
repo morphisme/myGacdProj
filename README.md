@@ -3,7 +3,7 @@ myGacdProj
 
 Comments of R oode for Coursera / Getting and Cleaning Data / Course Project
 
-I use the following variables throughout the script:
+Description of variables and processing throughout the script:
 * step 1: Merges the training and the test sets to create one data set
 activityLabels: data.frame with "activity_labels.txt" content. 2 columns: "activityId", "activityName"
 features: data.frame with "activity_labels.txt" content. 2 columns: "featureId", "featureName"
