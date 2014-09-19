@@ -1,9 +1,10 @@
 myGacdProj
 ==========
 
-# R oode for Coursera / Getting and Cleaning Data / Course Project
+Comments of R oode for Coursera / Getting and Cleaning Data / Course Project
 
-# step 1: Merges the training and the test sets to create one data set
+I use the following variables throughout the script:
+* step 1: Merges the training and the test sets to create one data set
 activityLabels: data.frame with "activity_labels.txt" content. 2 columns: "activityId", "activityName"
 features: data.frame with "activity_labels.txt" content. 2 columns: "featureId", "featureName"
 nFeatures: rows number of features
@@ -15,34 +16,25 @@ subjectTest: data.frame with "subject_test.txt" content
 xTest: data.frame with "X_test.txt" content
 yTest: data.frame with "y_test.txt" content
 
-subjectAll <- rbind(subjectTrain, subjectTest)
-colnames(subjectAll) <- c("subjectId")
-xAll <- rbind(xTrain, xTest)
-yAll <- rbind(yTrain, yTest)
-colnames(yAll) <- c("activityId")
-dataSet0 <- cbind(subjectAll, xAll, yAll)
+subjectAll: union of subject tables. 1 column: "subjectId"
+xAll: union of x tables
+yAll: union of y tables. 1 column: "activityId"
+dataSet0: result of step 1
 
-# step 2: Extracts only the measurements on the mean and standard deviation for each measurement
-library(sqldf)
-myFeatures <- sqldf("select * from features where featureName like '%-mean(%' or featureName like '%-std(%'")
-kFeatures <- dim(myFeatures)[1]
-myColumns <- c(1, myFeatures$featureId+1, nFeatures+2)
-dataSet1 <- dataSet0[, myColumns]
+* step 2: Extracts only the measurements on the mean and standard deviation for each measurement
+use of sqldf to find the required names then columns
+dataSet1: result of step 2
 
-# step 3: Uses descriptive activity names to name the activities in the data set
-library(dplyr)
-dataSet1 <- left_join(dataSet1, activityLabels)
+* step 3: Uses descriptive activity names to name the activities in the data set
+use of dplyr to join activityLabels as descriptive activity names
+dataSet1: result of step 3
 
-# step 4: Appropriately labels the data set with descriptive variable names
-myFeatures$featureName2 <- gsub("[-(),]", "", myFeatures$featureName)
-colnames(dataSet1)[1:kFeatures+1] <- myFeatures$featureName2
+* step 4: Appropriately labels the data set with descriptive variable names
+use of regular expressions to clean the descriptive activity names
+use of these names as field names for the x part of dataSet1
 
-# step 5: From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject
-dataSet2 <- summarize(group_by(dataSet1, activityId, subjectId), mean(tBodyAccmeanX))
-for (featureName in myFeatures$featureName2[2:kFeatures]){
-   eval(parse(text=sprintf("dataSet2 <- left_join(dataSet2, summarize(group_by(dataSet1, activityId, subjectId), mean(%s)))", featureName)))
-                                      # Joining by: c("activityId", "subjectId")
-}
-dataSet2 <- left_join(dataSet2, activityLabels)  # dommage de le refaire...
-
-write.table(dataSet2, file="project-output.txt", quote=FALSE, row.names=FALSE)
+* step 5: From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject
+use of dplyr to perform the required processing
+use of dynamic coding, through 'eval', to perform the tricky part of the processing
+dataSet2: result of step 5
+result file output as required (hopefully)
